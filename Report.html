@@ -1,55 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: #333; }
-        nav { background: rgba(255,255,255,0.9); padding: 15px; border-radius: 10px; margin: 20px; }
-        nav ul { list-style: none; display: flex; justify-content: center; padding: 0; }
-        nav a { text-decoration: none; color: #0984e3; margin: 0 20px; font-weight: bold; padding: 10px; border-radius: 5px; transition: 0.3s; }
-        nav a:hover { background: #0984e3; color: white; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background: #0984e3; color: white; }
-        tr:nth-child(even) { background: #f2f2f2; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports</title>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    body { font-family: 'Segoe UI', sans-serif; margin:0; padding:0; background: linear-gradient(135deg, #74b9ff, #0984e3); color:#333; }
+    nav { background: rgba(255,255,255,0.9); padding:15px; border-radius:10px; margin:20px; }
+    nav ul { list-style:none; display:flex; justify-content:center; padding:0; }
+    nav a { text-decoration:none; color:#0984e3; margin:0 20px; font-weight:bold; padding:10px; border-radius:5px; }
+    nav a:hover { background:#0984e3; color:white; }
+    .container { max-width:1200px; margin:20px auto; padding:20px; background:white; border-radius:10px; }
+    button { margin-top:20px; padding:10px 20px; background:#0984e3; color:white; border:none; border-radius:5px; cursor:pointer; }
+    button:hover { background:#74b9ff; }
+</style>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="Home.html"><i class="fas fa-home"></i> Home</a></li>
-            <li><a href="Attendance.html"><i class="fas fa-list"></i> Attendance List</a></li>
-            <li><a href="Add-student.html"><i class="fas fa-user-plus"></i> Add Student</a></li>
-            <li><a href="Report.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
-            <li><a href="log-out.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
 
-        </ul>
-    </nav>
-    <div class="container">
-        <h1>Statistical Reports</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Course</th>
-                    <th>Present Count</th>
-                    <th>Absent Count</th>
-                    <th>Attendance Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Math 101</td>
-                    <td>25</td>
-                    <td>5</td>
-                    <td>83%</td>
-                </tr>
-                <!-- Add more rows here -->
-            </tbody>
-        </table>
-    </div>
+<nav>
+<ul>
+<li><a href="Home.html"><i class="fas fa-home"></i> Home</a></li>
+<li><a href="Attendance.html"><i class="fas fa-list"></i> Attendance List</a></li>
+<li><a href="Add-student.html"><i class="fas fa-user-plus"></i> Add Student</a></li>
+<li><a href="Report.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+<li><a href="log-out.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+</ul>
+</nav>
+
+<div class="container">
+<h1>Statistical Reports</h1>
+
+<!-- Show Chart Button -->
+<button id="generateReport">Generate Chart</button>
+
+<!-- Chart Container -->
+<div style="max-width:600px; margin-top:20px;">
+    <canvas id="reportChart"></canvas>
+</div>
+</div>
+
+<script>
+document.getElementById("generateReport").addEventListener("click", function() {
+    // Example: get students from localStorage (same structure as Attendance page)
+    const students = JSON.parse(localStorage.getItem("students") || "[]");
+
+    const total = students.length;
+    const present = students.filter(s => (s.present || "Yes").toLowerCase() === "yes").length;
+    const participated = students.filter(s => (s.participated || "Yes").toLowerCase() === "yes").length;
+
+    const ctx = document.getElementById("reportChart").getContext("2d");
+
+    if(window.reportChartInstance) window.reportChartInstance.destroy();
+
+    window.reportChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ["Total Students", "Present", "Participated"],
+            datasets: [{
+                label: "Attendance Report",
+                data: [total, present, participated],
+                backgroundColor: ['#0984e3', '#00b894', '#fdcb6e']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                title: { display: true, text: 'Attendance Report' }
+            },
+            scales: { y: { beginAtZero: true, stepSize:1 } }
+        }
+    });
+});
+</script>
+
 </body>
 </html>
+
+
+
+         

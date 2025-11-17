@@ -1,78 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Attendance List</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: #333; }
-        nav { background: rgba(255,255,255,0.9); padding: 15px; border-radius: 10px; margin: 20px; }
-        nav ul { list-style: none; display: flex; justify-content: center; padding: 0; }
-        nav a { text-decoration: none; color: #0984e3; margin: 0 20px; font-weight: bold; padding: 10px; border-radius: 5px; transition: 0.3s; }
-        nav a:hover { background: #0984e3; color: white; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background: #0984e3; color: white; }
-        tr:nth-child(even) { background: #f2f2f2; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance List</title>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #74b9ff, #0984e3); color: #333; }
+nav { background: rgba(255,255,255,0.9); padding: 15px; border-radius: 10px; margin: 20px; }
+nav ul { list-style: none; display: flex; justify-content: center; padding: 0; }
+nav a { text-decoration: none; color: #0984e3; margin: 0 20px; font-weight: bold; padding: 10px; border-radius: 5px; }
+nav a:hover { background: #0984e3; color: white; }
+.container { max-width: 1200px; margin: 20px auto; padding: 20px; background: white; border-radius: 10px; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+th { background: #0984e3; color: white; }
+tr:nth-child(even) { background: #f2f2f2; }
+tr.hover-row { background: #ffeaa7 !important; cursor: pointer; }
+button { margin-top: 10px; margin-right: 10px; padding: 10px 20px; background: #0984e3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+button:hover { background: #74b9ff; }
+input[type=text], input[type=number], input[type=email] { padding: 6px; margin: 5px; width: 180px; border-radius: 5px; border: 1px solid #ccc; }
+label { font-weight: bold; margin-right: 5px; }
+#confirmation { margin-top:10px; color: green; font-weight: bold; }
+</style>
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="Home.html"><i class="fas fa-home"></i> Home</a></li>
-            <li><a href="Attendance.html"><i class="fas fa-list"></i> Attendance List</a></li>
-            <li><a href="Add-student.html"><i class="fas fa-user-plus"></i> Add Student</a></li>
-            <li><a href="Report.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
-            <li><a href="log-out.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
 
-        </ul>
-    </nav>
-    <div class="container">
-        <h1>Student Attendance List</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Student ID</th>
-                    <th>Last Name</th>
-                    <th>First Name</th>
-                    <th>Course</th>
-                    <th>Session Date</th>
-                    <th>Present</th>
-                    <th>Participated</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <tbody id="studentTableBody">
-    <!-- Students will appear here automatically -->
-</tbody>
+<!-- Navigation -->
+<nav>
+<ul>
+<li><a href="Home.html"><i class="fas fa-home"></i> Home</a></li>
+<li><a href="Attendance.html"><i class="fas fa-list"></i> Attendance</a></li>
+<li><a href="Add-student.html"><i class="fas fa-user-plus"></i> Add Student</a></li>
+<li><a href="Report.html"><i class="fas fa-chart-bar"></i> Reports</a></li>
+<li><a href="log-out.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+</ul>
+</nav>
+
+<div class="container">
+<h1>Student Attendance List</h1>
+
+<!-- Add Student Form -->
+<h2>Add New Student</h2>
+<form id="addStudentForm">
+<label for="id">ID:</label>
+<input type="number" id="id" required>
+<label for="lastName">Last Name:</label>
+<input type="text" id="lastName" required>
+<label for="firstName">First Name:</label>
+<input type="text" id="firstName" required>
+<label for="course">Course:</label>
+<input type="text" id="course" placeholder="Math 101">
+<label for="present">Present:</label>
+<select id="present">
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+</select>
+<label for="participated">Participated:</label>
+<select id="participated">
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+</select>
+<button type="submit">Add Student</button>
+</form>
+<div id="confirmation"></div>
+
+<!-- Attendance Table -->
+<table id="attendance">
+    <thead>
+        <tr>
+            <th>Student ID</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Course</th>
+            <th>Session Date</th>
+            <th>Present</th>
+            <th>Participated</th>
+            <th>Absences</th>
+            <th>Participation Count</th>
+            <th>Message</th>
+        </tr>
+    </thead>
+    <tbody id="studentTableBody"></tbody>
+</table>
+
+<!-- Buttons -->
+<button id="showReportBtn">Show Report</button>
+<button id="highlightExcellent">Highlight Excellent Students</button>
+<button id="resetColors">Reset Colors</button>
+
+<!-- Chart Container -->
+<div style="max-width:600px; margin-top:20px;">
+    <canvas id="attendanceChart"></canvas>
+</div>
+</div>
 
 <script>
-  // Load students from localStorage
-  const students = JSON.parse(localStorage.getItem("students") || "[]");
-  const tbody = document.getElementById("studentTableBody");
-
-  students.forEach((s) => {
+const students = JSON.parse(localStorage.getItem("students") || "[]");
+const tbody = document.getElementById("studentTableBody");
+function addStudentToTable(s) {
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td>${s.id}</td>
-      <td>${s.lastName}</td>
-      <td>${s.firstName}</td>
-      <td>Math 101</td>
-      <td>${new Date().toISOString().split('T')[0]}</td>
-      <td>Yes</td>
-      <td>Yes</td>
+        <td>${s.id}</td>
+        <td>${s.lastName}</td>
+        <td>${s.firstName}</td>
+        <td>${s.course || "Math 101"}</td>
+        <td>${new Date().toISOString().split('T')[0]}</td>
+        <td>${s.present}</td>
+        <td>${s.participated}</td>
+        <td>0</td>
+        <td>0</td>
+        <td></td>
     `;
     tbody.appendChild(row);
-  });
-</script>
+    updateTable();
+}
 
-                </tr>
-                <!-- Add more rows here -->
-            </tbody>
-        </table>
-    </div>
+// Load existing students
+students.forEach(addStudentToTable);
+
+// Update table absences, participation, messages
+function updateTable() {
+    $("#attendance tbody tr").each(function(){
+        const presentText = $(this).find("td:eq(5)").text().toLowerCase();
+        const participatedText = $(this).find("td:eq(6)").text().toLowerCase();
+        const absences = (presentText === "no") ? 1 : 0;
+        const participations = (participatedText === "yes") ? 1 : 0;
+
+        $(this).find("td:eq(7)").text(absences);
+        $(this).find("td:eq(8)").text(participations);
+
+        const messageCell = $(this).find("td:eq(9)");
+        $(this).removeClass("green yellow red");
+
+        if(absences < 3) {
+            $(this).addClass("green");
+            messageCell.text("Good attendance – Excellent participation");
+        } else if(absences >= 3 && absences <= 4){
+            $(this).addClass("yellow");
+            messageCell.text("Warning – attendance low – You need to participate more");
+        } else {
+            $(this).addClass("red");
+            messageCell.text("Excluded – too many absences – You need to participate more");
+        }
+    });
+}
+
+$(function(){
+    const $table = $("#attendance");
+
+    // Exercise 5: Hover highlight
+    $table.on("mouseenter","tbody tr",function(){ $(this).addClass("hover-row"); });
+    $table.on("mouseleave","tbody tr",function(){ $(this).removeClass("hover-row"); });
+
+    // Exercise 5: Click alert
+    $table.on("click","tbody tr",function(){
+        const first = $(this).find("td:eq(2)").text();
+        const last = $(this).find("td:eq(1)").text();
+        const absences = $(this).find("td:eq(7)").text();
+        alert(`Student: ${first} ${last}\nAbsences: ${absences}`);
+    });
+
+    // Exercise 6: Highlight Excellent Students
+    $("#highlightExcellent").click(function(){
+        $("#attendance tbody tr").each(function(){
+            const absences = parseInt($(this).find("td:eq(7)").text());
+            if(absences < 3){
+                $(this).animate({backgroundColor: "#00ff99"},1000).animate({backgroundColor: ""},1000);
+            }
+        });
+    });
+
+    // Exercise 6: Reset Colors
+    $("#resetColors").click(function(){
+        $("#attendance tbody tr").css("background-color","");
+    });
+
+    // Exercise 2: Show Report chart
+    $("#showReportBtn").click(function(){
+        const $rows = $("#attendance tbody tr");
+        const totalStudents = $rows.length;
+        let totalPresent = 0;
+        let totalParticipated = 0;
+
+        $rows.each(function(){
+            const present = $(this).find("td:eq(5)").text().toLowerCase();
+            const participated = $(this).find("td:eq(6)").text().toLowerCase();
+            if(present === "yes") totalPresent++;
+            if(participated === "yes") totalParticipated++;
+        });
+
+        const ctx = document.getElementById("attendanceChart").getContext("2d");
+        if(window.attendanceChartInstance) window.attendanceChartInstance.destroy();
+        window.attendanceChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["Total Students", "Present", "Participated"],
+                datasets: [{
+                    label: "Attendance Report",
+                    data: [totalStudents, totalPresent, totalParticipated],
+                    backgroundColor: ['#0984e3','#00b894','#fdcb6e']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display:false }, title:{display:true,text:"Attendance Report"} },
+                scales: { y:{ beginAtZero:true, stepSize:1 } }
+            }
+        });
+    });
+
+    // Add Student Form
+    $("#addStudentForm").submit(function(e){
+        e.preventDefault();
+        const newStudent = {
+            id: $("#id").val(),
+            lastName: $("#lastName").val(),
+            firstName: $("#firstName").val(),
+            course: $("#course").val(),
+            present: $("#present").val(),
+            participated: $("#participated").val()
+        };
+        students.push(newStudent);
+        localStorage.setItem("students", JSON.stringify(students));
+        addStudentToTable(newStudent);
+        $("#confirmation").text("Student added successfully!");
+        $(this)[0].reset();
+    });
+});
+</script>
 </body>
 </html>
+
+
+
+
+
